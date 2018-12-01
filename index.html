@@ -19,7 +19,7 @@
   </button>
 </nav>
     <div id="topBox">
-      <div class="float-left" style="width:500px">
+      <div class="float-left" style="width:200px">
       </br>
         This website allows you to obtain a custom movie recommendation based on the average emotions you display for 5 seconds. After it analyzes your emotions, it picks a movie tailored to the emotions you displayed.
       </div>
@@ -36,8 +36,68 @@
       Surprise: <div id="surprise"></div>
       Valence: <div id="valence"></div>
     </div>
+    <div id="avgEmotions">
+      Average Anger: <div id="avgAnger"></div>
+      Average Contempt: <div id="avgContempt"></div>
+      Average Disgust: <div id="avgDisgust"></div>
+      Average Engagement: <div id="avgEngagement"></div>
+      Average Fear: <div id="avgFear"></div>
+      Average Joy: <div id="avgJoy"></div>
+      Average Sadness: <div id="avgSadness"></div>
+      Average Surprise: <div id="avgSurprise"></div><br>
+      Dominant Emotion: <div id="dEmotion"></div>
+
+    </div>
   </body>
   <script>
+    var counter = 0;
+    var sample = 100;
+    var avgAnger = 0;
+    var avgContempt = 0;
+    var avgDisgust = 0;
+    var avgEngagement = 0;
+    var avgFear = 0;
+    var avgJoy = 0;
+    var avgSadness = 0;
+    var avgSurprise = 0;
+    function getDominantEmotion(avgEmotions) {
+      var curMax = 2;
+      var c;
+      for (c = 0; c < avgEmotions.length; c++) {
+        if (avgEmotions[c] > avgEmotions[curMax]) {
+          curMax = c;
+        }
+      }
+      switch (curMax) {
+        case 0:
+          return "Anger";
+        case 1:
+          return "Contempt";
+        case 2:
+          return "Disgust";
+        case 3:
+          return "Engagement";
+        case 4:
+          return "Fear";
+        case 5:
+          return "Joy";
+        case 6:
+          return "Sadness";
+        case 7:
+          return "Surprise";
+      }
+    }
+    function getRandomIntInclusive(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+    }
+    function averageEmotion() {
+
+    }
+    function getMovie(emotion) {
+      return emotion[getRandomIntInclusive(0, 2)];
+    }
     window.onload = function() {
       const videoWidth = 640, videoHeight = 480
       const faceMode = affdex.FaceDetectorMode.LARGE_FACES
@@ -61,6 +121,38 @@
           document.getElementById("sadness").innerHTML = faces[0].emotions.sadness;
           document.getElementById("surprise").innerHTML = faces[0].emotions.surprise;
           document.getElementById("valence").innerHTML = faces[0].emotions.valence;
+          if (counter < sample) {
+            avgAnger += faces[0].emotions.anger;
+            avgContempt += faces[0].emotions.contempt;
+            avgDisgust += faces[0].emotions.disgust;
+            avgEngagement += faces[0].emotions.engagement;
+            avgFear += faces[0].emotions.fear;
+            avgJoy += faces[0].emotions.joy;
+            avgSadness += faces[0].emotions.sadness;
+            avgSurprise += faces[0].emotions.surprise;
+            counter++;
+          }
+          if (counter == sample) {
+            avgAnger /= sample;
+            avgContempt /= sample;
+            avgDisgust /= sample;
+            avgEngagement /= sample;
+            avgFear /= sample;
+            avgJoy /= sample;
+            avgSadness /= sample;
+            avgSurprise /= sample;
+            document.getElementById("avgAnger").innerHTML = avgAnger;
+            document.getElementById("avgContempt").innerHTML = avgContempt;
+            document.getElementById("avgDisgust").innerHTML = avgDisgust;
+            document.getElementById("avgEngagement").innerHTML = avgEngagement;
+            document.getElementById("avgFear").innerHTML = avgFear;
+            document.getElementById("avgJoy").innerHTML = avgJoy;
+            document.getElementById("avgSadness").innerHTML = avgSadness;
+            document.getElementById("avgSurprise").innerHTML = avgSurprise;
+            var avgEmotions = [avgAnger, avgContempt, avgDisgust, avgEngagement, avgFear, avgJoy, avgSadness, avgSurprise];
+            document.getElementById("dEmotion").innerHTML = getDominantEmotion(avgEmotions);
+            counter++;
+          }
           console.log(faces[0]);
         }
       })
