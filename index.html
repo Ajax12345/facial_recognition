@@ -24,25 +24,8 @@
         This website allows you to obtain a custom movie recommendation based on the average emotions you display for 5 seconds. After it analyzes your emotions, it picks a movie tailored to the emotions you displayed.
       </div>
       <div class="float-right" id='video'></div>
-      <div id="emojiTable">
-        <table>
-          <tbody>
-            <tr>
-              <td><img height="100px" width="100px" src="anger.png"></td>
-              <td><img height="100px" width="100px" src="contempt.png"></td>
-              <td><img height="100px" width="100px" src="disgust.png"></td>
-              <td><img height="100px" width="100px" src="engagement.png"></td>
-            </tr>
-            <tr>
-              <td><img height="100px" width="100px" src="fear.png"></td>
-              <td><img height="100px" width="100px" src="joy.png"></td>
-              <td><img height="100px" width="100px" src="sadness.png"></td>
-              <td><img height="100px" width="100px" src="surprise.png"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </div>
+    <!--
     <div id='emotions'>
       Anger: <div id="anger"></div>
       Contempt: <div id="contempt"></div>
@@ -66,6 +49,27 @@
       Dominant Emotion: <div id="dEmotion"></div>
 
     </div>
+    -->
+
+    Dominant Emotion: <div id="dEmotion"></div>
+    <div id="emojiTable">
+        <table>
+          <tbody>
+            <tr>
+              <td><img id="anger" height="100px" width="100px" src="anger.png"></td>
+              <td><img id="contempt" height="100px" width="100px" src="contempt.png"></td>
+              <td><img id="disgust" height="100px" width="100px" src="disgust.png"></td>
+              <td><img id="engagement" height="100px" width="100px" src="engagement.png"></td>
+            </tr>
+            <tr>
+              <td><img id="fear" height="100px" width="100px" src="fear.png"></td>
+              <td><img id="joy" height="100px" width="100px" src="joy.png"></td>
+              <td><img id="sadness" height="100px" width="100px" src="sadness.png"></td>
+              <td><img id="surprise" height="100px" width="100px" src="surprise.png"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
   </body>
   <script>
     var counter = 0;
@@ -130,7 +134,7 @@
       
       detector.addEventListener( 'onImageResultsSuccess', function( faces ) {
         if( faces.length > 0 ) {
-          document.getElementById("anger").innerHTML = faces[0].emotions.anger;
+          /*document.getElementById("anger").innerHTML = faces[0].emotions.anger;
           document.getElementById("contempt").innerHTML = faces[0].emotions.contempt;
           document.getElementById("disgust").innerHTML = faces[0].emotions.disgust;
           document.getElementById("engagement").innerHTML = faces[0].emotions.engagement;
@@ -139,6 +143,7 @@
           document.getElementById("sadness").innerHTML = faces[0].emotions.sadness;
           document.getElementById("surprise").innerHTML = faces[0].emotions.surprise;
           document.getElementById("valence").innerHTML = faces[0].emotions.valence;
+          */
           if (counter < sample) {
             avgAnger += faces[0].emotions.anger;
             avgContempt += faces[0].emotions.contempt;
@@ -159,6 +164,7 @@
             avgJoy /= sample;
             avgSadness /= sample;
             avgSurprise /= sample;
+            /*
             document.getElementById("avgAnger").innerHTML = avgAnger;
             document.getElementById("avgContempt").innerHTML = avgContempt;
             document.getElementById("avgDisgust").innerHTML = avgDisgust;
@@ -167,8 +173,11 @@
             document.getElementById("avgJoy").innerHTML = avgJoy;
             document.getElementById("avgSadness").innerHTML = avgSadness;
             document.getElementById("avgSurprise").innerHTML = avgSurprise;
+            */
             var avgEmotions = [avgAnger, avgContempt, avgDisgust, avgEngagement, avgFear, avgJoy, avgSadness, avgSurprise];
-            document.getElementById("dEmotion").innerHTML = getDominantEmotion(avgEmotions);
+            var dEmotion = getDominantEmotion(avgEmotions);
+            document.getElementById("dEmotion").innerHTML = dEmotion;
+            document.getElementById(dEmotion.toLowerCase()).setAttribute("style", "background-color: #BEBEBE");
             counter++;
           }
           console.log(faces[0]);
