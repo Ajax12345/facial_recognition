@@ -83,7 +83,7 @@
     var avgSadness = 0;
     var avgSurprise = 0;
     function getDominantEmotion(avgEmotions) {
-      var curMax = 2;
+      var curMax = 0;
       var c;
       for (c = 0; c < avgEmotions.length; c++) {
         if (avgEmotions[c] > avgEmotions[curMax]) {
@@ -174,7 +174,7 @@
             document.getElementById("avgSadness").innerHTML = avgSadness;
             document.getElementById("avgSurprise").innerHTML = avgSurprise;
             */
-            var avgEmotions = [avgAnger, avgContempt, avgDisgust, avgEngagement, avgFear, avgJoy, avgSadness, avgSurprise];
+            var avgEmotions = [avgAnger, avgContempt, avgDisgust, 0, avgFear, avgJoy, avgSadness, avgSurprise];
             var dEmotion = getDominantEmotion(avgEmotions);
             document.getElementById("dEmotion").innerHTML = dEmotion;
             document.getElementById(dEmotion.toLowerCase()).setAttribute("style", "background-color: #BEBEBE");
