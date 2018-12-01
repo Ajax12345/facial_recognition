@@ -12,17 +12,30 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <h1>
-      Emotion movie recommendation
-    </h1>
+    <nav class="navbar navbar-expand-lg" style="background-color: #b12c55;color:white">
+  <a class="navbar-brand" href="#" style='color:white'>Emotional Movie Recommender</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+</nav>
     <div id="topBox">
       <div class="float-left" style="width:500px">
+      </br>
         This website allows you to obtain a custom movie recommendation based on the average emotions you display for 5 seconds. After it analyzes your emotions, it picks a movie tailored to the emotions you displayed.
       </div>
       <div class="float-right" id='video'></div>
     </div>
-    
-    <div id='emoji'></div>
+    <div id='emotions'>
+      Anger: <div id="anger"></div>
+      Contempt: <div id="contempt"></div>
+      Disgust: <div id="disgust"></div>
+      Engagement: <div id="engagement"></div>
+      Fear: <div id="fear"></div>
+      Joy: <div id="joy"></div>
+      Sadness: <div id="sadness"></div>
+      Surprise: <div id="surprise"></div>
+      Valence: <div id="valence"></div>
+    </div>
   </body>
   <script>
     window.onload = function() {
@@ -39,6 +52,15 @@
       
       detector.addEventListener( 'onImageResultsSuccess', function( faces ) {
         if( faces.length > 0 ) {
+          document.getElementById("anger").innerHTML = faces[0].emotions.anger;
+          document.getElementById("contempt").innerHTML = faces[0].emotions.contempt;
+          document.getElementById("disgust").innerHTML = faces[0].emotions.disgust;
+          document.getElementById("engagement").innerHTML = faces[0].emotions.engagement;
+          document.getElementById("fear").innerHTML = faces[0].emotions.fear;
+          document.getElementById("joy").innerHTML = faces[0].emotions.joy;
+          document.getElementById("sadness").innerHTML = faces[0].emotions.sadness;
+          document.getElementById("surprise").innerHTML = faces[0].emotions.surprise;
+          document.getElementById("valence").innerHTML = faces[0].emotions.valence;
           console.log(faces[0]);
         }
       })
