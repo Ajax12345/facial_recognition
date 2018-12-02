@@ -1,0 +1,175 @@
+
+<html>
+  <style>
+
+    #emoji {
+      font-size:10em;
+    }
+    .info_banner{
+      color:#b5b5b5;
+      width:500px;
+      padding:50px;
+      border:solid;
+      border-color:#b5b5b5;
+      border-width:1px;
+    }
+    .poster{
+      margin:0 auto;
+      width:300px;
+      height:450px;
+      display:block;
+    }
+  </style>
+    <head>
+      <script src="https://download.affectiva.com/js/3.2/affdex.js"></script>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    </head>
+    <body style='background-color: #252525;'>
+
+      <nav class="navbar navbar-expand-lg" style="background-color: #b12c55;color:white">
+      <a class="navbar-brand" href="#" style='color:white'>Emotional Movie Recommender</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a href="https://github.com/Ajax12345/facial_recognition"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+    </nav>
+    <div style='height:40px;'></div>
+    <div class='main_wrapper'>
+      <div class='container'>
+        <div class='row'>
+          <div class='col'>
+            <div class='countdown'>
+              <h1 style='color:#b5b5b5;margin-left:-50px'>Press any key to begin....</h1>
+            </div>
+
+          </div>
+          <div class='col'>
+            <div class="info_banner">
+              This website allows you to obtain a custom movie recommendation based on the average emotion you display. After it analyzes your emotions, it picks a movie tailored to the emotions you displayed.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+      <div id='emoji'></div>
+      <div id='video' style='display:none;'></div>
+    </body>
+    <script>
+
+      $(document).ready(function(){
+        var finally_detecting = false;
+        var results = [];
+        var counter = 0;
+        var given_recommendation = false
+        function update_progress_bar(){
+          var new_val = parseInt($('.progress-bar').attr('aria-valuenow'))+5;
+          $('.progress-bar').attr('aria-valuenow', new_val.toString());
+          $('.progress-bar').css('width', new_val.toString()+'%');
+        }
+        function _enter(){
+          if (!finally_detecting){
+            var new_val = parseFloat($('.progress-bar').attr('aria-valuenow'))+0.6;
+            $('.progress-bar').attr('aria-valuenow', new_val.toString());
+            $('.progress-bar').css('width', new_val.toString()+'%');
+            setTimeout(function(){
+              _enter();
+            }, 500);
+          }
+        }
+        function countdown(val){
+          if (val > 0){
+            $('.countdown').html('<h1 style="color:#b5b5b5;margin-left:-10px;">'+val.toString()+'</h1>');
+            setTimeout(function(){
+              countdown(val-1);
+
+            }, 1000);
+          }
+          else{
+            var the_html = `
+            <div class="progress" style='margin-top:400px;'>
+              <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            `;
+            $('.countdown').html(the_html);
+            get_facial_features();
+          }
+        }
+        function get_facial_features(){
+
+          _enter();
+          var videoWidth = 240;
+
+          var videoHeight = 180;
+          const faceMode = affdex.FaceDetectorMode.LARGE_FACES
+
+          const detector = new affdex.CameraDetector(
+            document.querySelector('#video'),
+            videoWidth, videoHeight, faceMode
+          )
+
+          //detector.detectEmotions.joy = true
+          detector.detectAllEmotions()
+
+          detector.addEventListener( 'onImageResultsSuccess', function( faces ) {
+
+            if( faces.length > 0 && counter < 100) {
+              finally_detecting = true;
+              console.log(faces);
+              counter += 1;
+              update_progress_bar();
+              results.push(faces[0].emotions);
+            }
+            else{
+              if (counter >= 100){
+                detector.stop();
+                $.ajax({
+                url: "/recommend_movie",
+                type: "get",
+                data: {vals: JSON.stringify(results)},
+                success: function(response) {
+                  if (!given_recommendation){
+                    if (response.success === "True"){
+                      var new_html = `
+                        <h1 style="color:#b5b5b5;margin-left:-10px;font-size:18px;">Based on your current emotions we recommend:</h1>
+                        <h1 style='color:white;text-align:center;font-size:25px;margin-top:60px;'>${response.title}</h1>
+                        <div style='height:30px;'></div>
+                        <img class='poster' src='${response.cover}'>
+                      `;
+                      $('.countdown').html(new_html);
+                    }
+                    given_recommendation = true;
+                  }
+
+                },
+                error: function(xhr) {
+                  //Do Something to handle error
+                }
+              });
+
+              }
+
+
+            }
+          })
+
+          detector.start()
+        }
+        $(document).on("keypress", function(e){
+          $('.countdown').html('');
+          countdown(5);
+        });
+
+      });
+
+
+    </script>
+  </html>
