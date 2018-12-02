@@ -18,12 +18,36 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 </nav>
-    <div id="topBox">
-      <div class="float-left" style="width:200px">
-      </br>
-        This website allows you to obtain a custom movie recommendation based on the average emotions you display for 5 seconds. After it analyzes your emotions, it picks a movie tailored to the emotions you displayed.
+<br>
+    <div class="container">
+      <div class="row" id="topBox">
+        <div class="col" style="width:200px">
+          This website allows you to obtain a custom movie recommendation based on the average emotions you display for 5 seconds. After it analyzes your emotions, it picks a movie tailored to the emotions you displayed.
+          <br><br>
+          <div>
+          <div>Dominant Emotion: <div id="dEmotion"></div></div><br>
+          <div id="emojiTable">
+            <table>
+              <tbody>
+                <tr>
+                  <td><img id="anger" height="100px" width="100px" src="anger.png"></td>
+                  <td><img id="contempt" height="100px" width="100px" src="contempt.png"></td>
+                  <td><img id="disgust" height="100px" width="100px" src="disgust.png"></td>
+                  <td><img id="engagement" height="100px" width="100px" src="engagement.png"></td>
+                </tr>
+                <tr>
+                  <td><img id="fear" height="100px" width="100px" src="fear.png"></td>
+                  <td><img id="joy" height="100px" width="100px" src="joy.png"></td>
+                  <td><img id="sadness" height="100px" width="100px" src="sadness.png"></td>
+                  <td><img id="surprise" height="100px" width="100px" src="surprise.png"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
       </div>
-      <div class="float-right" id='video'></div>
+        </div>
+        <div class="col" id='video'></div>
+      </div>
     </div>
     <!--
     <div id='emotions'>
@@ -50,30 +74,14 @@
 
     </div>
     -->
-
-    Dominant Emotion: <div id="dEmotion"></div>
-    <div id="emojiTable">
-        <table>
-          <tbody>
-            <tr>
-              <td><img id="anger" height="100px" width="100px" src="anger.png"></td>
-              <td><img id="contempt" height="100px" width="100px" src="contempt.png"></td>
-              <td><img id="disgust" height="100px" width="100px" src="disgust.png"></td>
-              <td><img id="engagement" height="100px" width="100px" src="engagement.png"></td>
-            </tr>
-            <tr>
-              <td><img id="fear" height="100px" width="100px" src="fear.png"></td>
-              <td><img id="joy" height="100px" width="100px" src="joy.png"></td>
-              <td><img id="sadness" height="100px" width="100px" src="sadness.png"></td>
-              <td><img id="surprise" height="100px" width="100px" src="surprise.png"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
   </body>
   <script>
+    // counter for amount of processed frames
     var counter = 0;
+    // how many processed frames we want to account for
     var sample = 100;
+
+    // variable to store values for the average value of each emotion
     var avgAnger = 0;
     var avgContempt = 0;
     var avgDisgust = 0;
@@ -82,6 +90,8 @@
     var avgJoy = 0;
     var avgSadness = 0;
     var avgSurprise = 0;
+
+    // returns the emotion with the highest average
     function getDominantEmotion(avgEmotions) {
       var curMax = 0;
       var c;
@@ -109,17 +119,6 @@
           return "Surprise";
       }
     }
-    function getRandomIntInclusive(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
-    }
-    function averageEmotion() {
-
-    }
-    function getMovie(emotion) {
-      return emotion[getRandomIntInclusive(0, 2)];
-    }
     window.onload = function() {
       const videoWidth = 640, videoHeight = 480
       const faceMode = affdex.FaceDetectorMode.LARGE_FACES
@@ -145,6 +144,8 @@
           document.getElementById("valence").innerHTML = faces[0].emotions.valence;
           */
           if (counter < sample) {
+            // this is where we add all of the emotional values
+            // sample is how many processed frames are accounted for
             avgAnger += faces[0].emotions.anger;
             avgContempt += faces[0].emotions.contempt;
             avgDisgust += faces[0].emotions.disgust;
@@ -156,6 +157,8 @@
             counter++;
           }
           if (counter == sample) {
+            // here we divide the sum of all the emotional values
+            // by the sample to obtain the average
             avgAnger /= sample;
             avgContempt /= sample;
             avgDisgust /= sample;
@@ -174,10 +177,17 @@
             document.getElementById("avgSadness").innerHTML = avgSadness;
             document.getElementById("avgSurprise").innerHTML = avgSurprise;
             */
+            // put all the emotions into an array to find the max easily
+            // engagement is 0 because it usually has a higher value than most emotions
             var avgEmotions = [avgAnger, avgContempt, avgDisgust, 0, avgFear, avgJoy, avgSadness, avgSurprise];
             var dEmotion = getDominantEmotion(avgEmotions);
+            // Show the dominant emotion using text and the emoji table
             document.getElementById("dEmotion").innerHTML = dEmotion;
             document.getElementById(dEmotion.toLowerCase()).setAttribute("style", "background-color: #BEBEBE");
+            // stop collecting data after we find the average emotion
+            detector.stop()
+            // show the chosen movie
+            document.getElementById("video").innerHTML = "<div><h1>Movie Title</h1><br>Movie Image here<br><a href=\"#\">Movie link here</a></div>";
             counter++;
           }
           console.log(faces[0]);
